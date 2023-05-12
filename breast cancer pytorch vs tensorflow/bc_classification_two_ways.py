@@ -11,6 +11,10 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
+'''
+This examples shows the surface  differences between tensorflow via  keras and pytorch on a simple breastcancer classification case
+'''
+
 data = load_breast_cancer()
 type(data)
 
@@ -30,18 +34,33 @@ X_test = scaler.transform(X_test) # use pre-fitted param to transform the data
 
 
 # model Tensorflow version
-model_tf = tf.keras.models.Sequential([
-    tf.keras.layers.Input(shape=(input_shape,)),
-    tf.keras.layers.Dense(1, activation='sigmoid')
-])
+## dont use this if you plan to save and load your model will return an error due to the input layer. check if the bug has been fixed  though
+# model_tf = tf.keras.models.Sequential([
+#     tf.keras.layers.Input(shape=(input_shape,)),
+#     tf.keras.layers.Dense(1, activation='sigmoid')
+# ])
 
-model_tf.compile(optimizer = 'adam', loss='binary_crossentropy', metrics=['accuracy'])
+# use this instead
+model_tf  =  tf.keras.models.Sequential()
+model_tf.add(tf.keras.layers.Dense(1, input_shape =(input_shape,), activation='sigmoid'))
+
+model_tf.compile(optimizer = 'adam',
+                loss='binary_crossentropy', 
+                metrics=['accuracy'])
 
 tens_mod = model_tf.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=100)
 
 print('Train score: ', model_tf.evaluate(X_train, y_train) )
 print('Test Score: ', model_tf.evaluate(X_test, y_test))
 
+# Making predictions  
+
+P_tens = model_tf.predict(X_test)
+P_tens = np.round(P_tens).flatten() # flatten n  by  1 to n 
+
+# comparision 
+np.mean(P_tens == y_test)  # mean of boolean array
+model_tf.evaluate(X_test, y_test)
 
 # model pytorch
 model_torch = torch.nn.Linear(input_shape, 1)
@@ -87,6 +106,7 @@ X_test = torch.from_numpy(X_test.astype(np.float32))
 y_train = torch.from_numpy(y_train.astype(np.float32)).reshape(-1, 1)
 y_test = torch.from_numpy(y_test.astype(np.float32)).reshape(-1, 1)
 
+#returns final acc value, to get the acc over time include it in your train loop
 train_losses, test_losses, train_acc, test_acc = fit_torch(model_torch, criterion, optimizer, X_train, y_train, X_test, y_test)
 
 # plot the results
