@@ -1,2 +1,7 @@
 /brain tumor segmentation LGG/data/
+/Fashion and Cifar/FashionMNIST
 *.zip
+
+*.pt
+
+*.pyc

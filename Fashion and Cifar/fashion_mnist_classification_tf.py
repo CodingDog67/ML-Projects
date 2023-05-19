@@ -1,7 +1,6 @@
 """
-Sample case of a simple CNN in functional API style - Tensorflow/Keras, confusion matrix code can be reused nicely
+Sample case of a simple CNN in functional API style - Tensorflow/Keras
 """
-
 
 import os.path
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -9,6 +8,7 @@ import tensorflow as tf
 print (tf.__version__)
 import numpy as np
 import matplotlib.pyplot as plt
+import plotting
 
 from tensorflow.python.client import device_lib
 device_lib.list_local_devices()
@@ -53,7 +53,7 @@ x = Dense(512, activation='relu')(x)
 x = Dropout(0.2)(x)
 x = Dense(num_classes, activation='softmax')(x)
 
-if not os.path.isfile('D:\\Code\\ML Projects\\Fashion and Cifar\\fashion_model.h5'):
+if not os.path.isfile('.\\Fashion and Cifar\\fashion_model.h5'):
     model  = Model(i, x) # list of inputs/single input, list of outputs/single output
     model.compile(optimizer=optim, loss=loss, metrics=[metric])
     model_trained = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=20)
@@ -64,17 +64,9 @@ if not os.path.isfile('D:\\Code\\ML Projects\\Fashion and Cifar\\fashion_model.h
     print('Model Saved!')
 
     # plotting the results
-    plt.plot(model_trained.history['accuracy'], label='acc')
-    plt.plot(model_trained.history['val_accuracy'], label='val_acc')
-    plt.title('Accuracy plot')
-    plt.legend()
-    plt.show()
-
-    plt.plot(model_trained.history['loss'], label='acc')
-    plt.plot(model_trained.history['val_loss'], label='val_acc')
-    plt.title('Loss plot')
-    plt.legend()
-    plt.show()
+    plotting.plot_train_test_acc(model_trained.history['accuracy'], model_trained.history['val_accuracy'])
+   
+    plotting.plot_train_test_loss(model_trained.history['loss'], model_trained.history['val_loss'])
 
 else:
     # load model
@@ -82,34 +74,6 @@ else:
     model_trained.summary()
     model_trained.evaluate(x_test, y_test)
 
-
-
-def plot_confusion_matrix(cm, classes, normalize=False,  cmap=plt.cm.Blues):
-    
-    if normalize:
-        print('Normalized confusion matrix')
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-    else:
-        print('Confusion Matrix not normalizs')
-    
-    print(cm)
-
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes)
-    plt.yticks(tick_marks,classes)
-
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i,j], fmt), horizontalalignment='center',color='white' if cm[i,j] > thresh else 'black')
-
-    plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.show()
-
 p_test = model_trained.predict(x_test).argmax(axis=1)
 cm = confusion_matrix(y_test, p_test)
-plot_confusion_matrix(cm, list(range(10)))
+plotting.plot_confusion_matrix(cm, list(range(10)))
