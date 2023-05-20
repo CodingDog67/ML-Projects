@@ -2,6 +2,9 @@
 /Fashion and Cifar/data/*
 /Fashion and Cifar/cifar-10-batches-py
 /Fashion and Cifar/models/*
+/Food classification - transfer learning/data/*
+!/Food classification - transfer learning/data/Readme.md
+
 *.zip
 
 *.pt
