@@ -1,7 +1,11 @@
 /brain tumor segmentation LGG/data/
-/Fashion and Cifar/FashionMNIST
+/Fashion and Cifar/data/*
+/Fashion and Cifar/cifar-10-batches-py
+/Fashion and Cifar/models/*
 *.zip
 
 *.pt
 
 *.pyc
+
+*.gz

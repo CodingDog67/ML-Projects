@@ -65,7 +65,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
 model.to(device)
 
-batch_size = 128
+batch_size = 256
 loss_func = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters())
 
@@ -190,6 +190,7 @@ else:
 x_test = test_dataset.data.numpy()
 y_test = test_dataset.targets.numpy()
 p_test = np.array([])
+
 for inputs, targets in test_loader:
   # move data to GPU
   inputs, targets = inputs.to(device), targets.to(device)
