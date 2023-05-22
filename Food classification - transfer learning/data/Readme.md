@@ -1,0 +1,1 @@
+Get the Data from https://mmspg.epfl.ch/downloads/food-image-datasets/
