@@ -34,22 +34,30 @@ train_transforms = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]) #standardized mean and std for imageNet
 ])
 
-test_tranforms = transforms.Compose([
+test_transforms = transforms.Compose([
     transforms.Resize(size=256),
     transforms.CenterCrop(size=224),
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]) #standardized mean and std for imageNet
 ])
 
+# Use this instead of augmentation transforms above to a faster classification at the cost of accuracy loss
+no_augmentation_transforms = transforms.Compose([
+    transforms.Resize(size=256), 
+    transforms.CenterCrop(size=224),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+])
+
 def get_dataset(path:str, batchsize:int):
     train_dataset = ImageFolder(
         path + 'train',
-        transform = train_transforms
+        transform = no_augmentation_transforms
     )
 
     test_dataset = ImageFolder(
         path + 'test', 
-        transform = test_tranforms
+        transform = no_augmentation_transforms
     )
 
     train_loader = torch.utils.data.DataLoader(
