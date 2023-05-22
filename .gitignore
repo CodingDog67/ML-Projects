@@ -4,7 +4,13 @@
 /Fashion and Cifar/models/*
 /Food classification - transfer learning/data/*
 !/Food classification - transfer learning/data/Readme.md
-
+/Beef and Lamb/build/*
+/Beef and Lamb/dist/*
+/Beef and Lamb/venv/*
+/OCT Segmentation/Data/*
+/OCT Segmentation/venv
+/OCT Segmentation/.idea
+/OCT Segmentation/model
 *.zip
 
 *.pt
