@@ -80,12 +80,14 @@ def main():
     # Loss and optimizer
     optim = torch.optim.Adam(model.parameters(), lr=0.0005)
     
+    # For the pre-encoded version alternatively use logisticRegression from sklearn.linear_model
+    # This is a pytorch implementation of the same
     train_losses, test_losses, model = fit(model, criterion, optim, train_loader, test_loader, epochs, device)
     
     plotting.plot_train_test_loss(train_losses, test_losses)
 
-    acc_train = get_accuracy(train_loader, model, device)
-    acc_test = get_accuracy(test_loader, model, device)
+    acc_train = get_accuracy(train_loader, model, device, aug=False)
+    acc_test = get_accuracy(test_loader, model, device, aug=False)
 
     print(f"Train accuracy: {acc_train: .4f}, Test accuracy: {acc_test: .4f}")
 
@@ -136,16 +138,19 @@ def fit(model, criterion, optim, train_loader, test_loader, epochs, device):
     
     return train_losses, test_losses, model
     
-def get_accuracy(loader, model, device):
+def get_accuracy(loader, model, device, aug=True):
     n_correct = 0
     n_total = 0
     
     for inputs, targets in loader:
         inputs = inputs.to(device)
         targets = targets.to(device)
-
         outputs = model(inputs)
-        _, predictions = torch.max(outputs, 1)
+
+        if aug:
+            _, predictions = torch.max(outputs, 1)
+        else:
+            predictions = (outputs > 0)
 
         n_correct += (predictions == targets).sum().item()
         n_total += targets.shape[0]
