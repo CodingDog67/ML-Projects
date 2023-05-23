@@ -11,10 +11,8 @@ class model_augmentation(nn.Module):
                                           nn.ReLU(), 
                                           nn.Linear(512, 2))
     def forward(self, x):
-        for layer in self.model.features:
-            x = layer(x)
-      
-        x = x.view(x.size()[0], -1)
+        x = self.model.features(x)
+        x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
     
@@ -23,5 +21,13 @@ class model_augmentation(nn.Module):
             param.requires_grad = False
     
 
-class model_NoAug():
-    pass
+class model_NoAug(nn.Module):
+    def __init__(self, vgg):
+        super(model_NoAug, self).__init__()
+        self.vgg = vgg
+
+    def forward(self, X):
+        x = self.vgg.features(X)
+        x = self.vgg.avgpool(x)
+        x = x.view(x.size(0), -1)
+        return x

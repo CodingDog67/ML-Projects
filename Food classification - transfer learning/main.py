@@ -6,19 +6,23 @@ from torchvision import models
 
 import sys
 import numpy as np
-from dataset import get_dataset
+from dataset import get_dataset, get_dataset_noAug, get_data_loader
 from datetime import datetime
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
 
 sys.path.insert(1, './Fashion and Cifar/')
 import plotting
-from model import model_augmentation
+from model import model_augmentation, model_NoAug
 
 def main():
-    _, _, train_loader, test_loader = get_dataset(path = ".\\Food classification - transfer learning\\data\\",batchsize=32)
+    train_dataset, test_dataset, train_loader, test_loader = get_dataset(path = ".\\Food classification - transfer learning\\data\\", batchsize=32)
 
     # using a pretrained model backbone
     model_vgg = models.vgg16(pretrained=True)
-
+    
+    # AUGMENTATION VERSION uncomment to use
+    ''' 
     model = model_augmentation(model_vgg)
     model.freeze_param()
 
@@ -30,12 +34,52 @@ def main():
     print(device)
     model.to(device)
 
+    criterion = nn.CrossEntropyLoss()
+    # END AUGMENTATION VERSION
+    '''
+
+    # PRE-ENCODED FEATURES VERSION 
+    encoder_model  = model_NoAug(model_vgg)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(device)
+    encoder_model.to(device)
+
+    out = encoder_model(torch.rand(1, 3, 224, 224).cuda())
+    D = out.shape[1]
+
+    x_train, y_train = get_dataset_noAug(train_dataset, train_loader, D, encoder_model)
+    x_test, y_test = get_dataset_noAug(test_dataset, test_loader, D, encoder_model)
+
+    scaler = StandardScaler()
+
+    x_train = scaler.fit_transform(x_train)
+    x_test = scaler.fit_transform(x_test)
+
+    model = nn.Linear(D, 1)
+    model.to(device)
+
+    criterion = nn.BCEWithLogitsLoss()
+
+    # make an encoded dataset
+    train_dataset2 = torch.utils.data.TensorDataset(
+        torch.from_numpy(x_train.astype(np.float32)),
+        torch.from_numpy(y_train.astype(np.float32)),
+    )
+
+    test_dataset2 = torch.utils.data.TensorDataset(
+        torch.from_numpy(x_test.astype(np.float32)),
+        torch.from_numpy(y_test.astype(np.float32)),
+    )
+
+    train_loader = get_data_loader(train_dataset2, 128, shuffle=True)
+    test_loader = get_data_loader(test_dataset2, 128, shuffle=False)
+    # END PRE_ENCODED FEATURES VERSION
+
     epochs = 6
 
     # Loss and optimizer
     optim = torch.optim.Adam(model.parameters(), lr=0.0005)
-    criterion = nn.CrossEntropyLoss()
-
+    
     train_losses, test_losses, model = fit(model, criterion, optim, train_loader, test_loader, epochs, device)
     
     plotting.plot_train_test_loss(train_losses, test_losses)
