@@ -90,7 +90,7 @@ def get_dataset_noAug(dataset, data_loader, D, model):
 
     return x_data, y_data
 
-
+# turn the batch sized data back into a flat array
 def populate(data_loader, model, x_data, y_data):
     i = 0
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
