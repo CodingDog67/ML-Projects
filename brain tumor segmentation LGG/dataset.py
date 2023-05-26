@@ -26,15 +26,16 @@ def get_data_loader(data_set, batchsize, shuffle):
     return data_loader
 
 # create a datasets.Imagefolder object
-class data(torch.utils.data.Dataset):
+class lgg_mri_dataset(torch.utils.data.Dataset):
     def __init__(self, label_dir, img_dir, transform=None, target_transform=None):
         self.img_dir = img_dir
         self.annotations = label_dir
         self.transform = transform
         self.target_transform = target_transform
+        self.images = os.listdir(img_dir)
 
     def __len__(self):
-        return len(glob(self.img_dir))
+        return len(self.images)
     
     def __getitem__(self,idx):
 
