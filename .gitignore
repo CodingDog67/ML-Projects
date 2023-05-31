@@ -11,6 +11,7 @@
 /OCT Segmentation/venv
 /OCT Segmentation/.idea
 /OCT Segmentation/model
+/Misc library samples/data/*
 *.zip
 
 *.pt
