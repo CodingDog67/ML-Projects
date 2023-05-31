@@ -10,9 +10,13 @@ model_directory: ../models/
 model_name: 
 
 # model params
-learning_rate: 0.1
+
+learning_rate: 0.001
 evaluation_matric: 
 save_model: True
 optimizer: adam
-batch_size: 64
-epochs: 30
+batch_size: 16
+epochs: 100
+pin_memory: True
+image_height: 256
+image_width: 256

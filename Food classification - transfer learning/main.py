@@ -1,8 +1,9 @@
 """ Example on how to use inference learning on a pretrained vgg16 model with Data augmentation or without and a fixed feature transformed set"""
-
+import wandb
 import torch
 import torch.nn as nn
 from torchvision import models
+import plotting
 
 import sys
 import numpy as np
@@ -12,8 +13,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 
 sys.path.insert(1, './Fashion and Cifar/')
-import plotting
 from model import model_augmentation, model_NoAug
+
+wandb.login()
 
 def main():
     train_dataset, test_dataset, train_loader, test_loader = get_dataset(path = ".\\Food classification - transfer learning\\data\\", batchsize=32)
